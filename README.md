@@ -14,8 +14,11 @@ How to run this benchmark?
 ### Bench result
 
 Test environment:
+
 CPU: 32C 
+
 MEM: 64GB 
+
 DISK: Delay 500 microseconds, bandwidth 150MB/s
 
 The following is a comparison table of the average time consumed by three Arrow implementation versions:
