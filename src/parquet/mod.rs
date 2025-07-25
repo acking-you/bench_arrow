@@ -50,21 +50,3 @@ pub fn sync_read_with_parquet2() {
 
     assert_eq!(rows, 1000000)
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::utils::Timer;
-
-    use super::*;
-    #[test]
-    fn test_sync_read_parquet() {
-        let _time = Timer::new();
-        sync_read_with_parquet();
-    }
-
-    #[test]
-    fn test_sync_read_parquet2() {
-        let _time = Timer::new();
-        sync_read_with_parquet2();
-    }
-}

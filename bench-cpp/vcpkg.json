@@ -1,0 +1,17 @@
+{
+  "dependencies": [
+    {
+      "name": "arrow",
+      "default-features": false,
+      "features": [
+        "parquet"
+      ]
+    }
+  ],
+  "overrides": [
+    {
+      "name": "arrow",
+      "version-string": "20.0.0#1"
+    }
+  ]
+}
