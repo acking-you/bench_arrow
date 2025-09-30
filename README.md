@@ -1,79 +1,119 @@
-## Arrow-rs VS Arrow-cpp
+# Arrow-rs VS Arrow-cpp
 
-## Rarquet reader
+[![Continuous Benchmarking](https://img.shields.io/badge/status-continuously%20updated-green)](./docs/benchmark-results/)
 
-Cpp source code:[parquet-reader](./bench-cpp/main.cpp)
+> 🔄 **This benchmark suite is continuously updated.** Check the [benchmark results directory](./docs/benchmark-results/) for the latest performance comparisons.
 
-Rust source code:[parquet-reader](./src/parquet/mod.rs)
+## Overview
 
-How to run this benchmark?
-1. `cargo run --release parquet` We can got arrow-rs result
-2. `cargo run --release parquet2` We can got arrow2 result
-2. `cd bench-cpp && sh pre_build.sh && sh run.sh` We can got arrow-cpp result
+Performance comparison of Apache Arrow implementations for Parquet file reading:
+- **arrow-rs**: Rust implementation of Apache Arrow
+- **arrow2**: Alternative Rust implementation 
+- **arrow-cpp**: C++ implementation of Apache Arrow
 
-### Bench result
+## Source Code
 
-Test environment:
+- Rust implementations: [parquet-reader](./src/parquet/mod.rs)
+- C++ implementation: [parquet-reader](./bench-cpp/main.cpp)
 
-CPU: 32C 
+## Current Versions
 
-MEM: 64GB 
-
-DISK: Delay 500 microseconds, bandwidth 150MB/s
-
-The following is a comparison table of the average time consumed by three Arrow implementation versions:
-
-| Implement version | avg(ms) | comparison    | relative performance |
-| ----------------- | ------- | ------------- | -------------------- |
-| **arrow-rs**      | 850.08  | ★★★ (fastest) | 1.00x                |
-| arrow-cpp         | 1358.71 | ★★☆           | 1.60x                |
-| arrow2            | 1609.19 | ★☆☆           | 1.89x                |
-
-
-arrow-rs:
-```sh
-Benchmark Results:
-[01] Duration: 834.286508ms
-[02] Duration: 843.900381ms
-[03] Duration: 856.391019ms
-[04] Duration: 865.760784ms
-[05] Duration: 851.303845ms
-[06] Duration: 852.156418ms
-[07] Duration: 856.119058ms
-[08] Duration: 843.616954ms
-[09] Duration: 854.13646ms
-[10] Duration: 843.094212ms
-Average:   850.076563ms | Total: 8.500765639s
+### Rust Dependencies
+```toml
+arrow = { version = "55.2.0", features = ["prettyprint", "ipc_compression"] }
+parquet = "55.2.0"
+arrow2 = { version = "0.18.0", features = ["io_parquet", "io_parquet_compression"] }
+parquet2 = "0.17.2"
 ```
 
-arrow2:
-```sh
-Benchmark Results:
-[01] Duration: 1.62560117s
-[02] Duration: 1.609013149s
-[03] Duration: 1.610131629s
-[04] Duration: 1.628685417s
-[05] Duration: 1.602293649s
-[06] Duration: 1.615221061s
-[07] Duration: 1.614847208s
-[08] Duration: 1.594796727s
-[09] Duration: 1.582285578s
-[10] Duration: 1.609006676s
-Average:   1.609188226s | Total: 16.091882264s
+### C++ Dependencies (vcpkg)
+```json
+{
+  "dependencies": [
+    {
+      "name": "arrow",
+      "default-features": false,
+      "features": ["parquet"]
+    }
+  ],
+  "overrides": [
+    {
+      "name": "arrow",
+      "version-string": "20.0.0#1"
+    }
+  ]
+}
 ```
 
-arrow-cpp:
-```sh
-Benchmark Results:
-[01] Duration: 1365.320 ms
-[02] Duration: 1423.472 ms
-[03] Duration: 1324.434 ms
-[04] Duration: 1357.547 ms
-[05] Duration: 1325.981 ms
-[06] Duration: 1345.143 ms
-[07] Duration: 1345.340 ms
-[08] Duration: 1354.894 ms
-[09] Duration: 1392.111 ms
-[10] Duration: 1352.823 ms
-Average:   1358.706 ms | Total: 13587.065 ms
+## Build Configuration
+
+### Rust Compilation
+```bash
+# Standard release build with optimization level 3
+cargo build --release
+
+# Run benchmarks
+cargo run --release parquet   # arrow-rs
+cargo run --release parquet2  # arrow2
 ```
+
+### C++ Compilation
+```bash
+# CMake with Release configuration
+cd bench-cpp
+sh pre_build.sh  # Configures CMake with vcpkg toolchain
+sh run.sh        # Builds with -DCMAKE_BUILD_TYPE=Release and runs
+
+# Requires environment variables:
+# - CPP_TOOLCHAIN_PATH
+# - VCPKG_ROOT
+```
+
+## How to Run Benchmarks
+
+### Run All Benchmarks
+```bash
+sh run_benchmarks.sh
+```
+
+This will automatically run all three implementations sequentially.
+
+### Run Individual Benchmarks
+
+1. **arrow-rs**: `cargo run --release parquet`
+2. **arrow2**: `cargo run --release parquet2`
+3. **arrow-cpp**: `cd bench-cpp && sh pre_build.sh && sh run.sh`
+
+## Latest Benchmark Results
+
+### Test Environment
+- **CPU**: 32 Cores
+- **Memory**: 64GB
+- **Disk**: Delay 500μs, bandwidth 150MB/s
+- **Dataset**: `test_data/hits_20.parquet` (1,000,000 rows)
+- **Methodology**: 10 iterations with 2 warmup cycles
+
+### Performance Summary
+
+| Implementation | avg(ms) | comparison    | relative performance |
+|---------------|---------|---------------|---------------------|
+| **arrow-rs**  | 850.08  | ★★★ (fastest) | 1.00x              |
+| arrow-cpp     | 1358.71 | ★★☆           | 1.60x              |
+| arrow2        | 1609.19 | ★☆☆           | 1.89x              |
+
+📊 **[View detailed benchmark results →](./docs/benchmark-results/2024-12-initial.md)**
+
+## Benchmark History
+
+All benchmark results are archived with detailed environment information, version specifications, and compilation flags:
+
+- [Latest Results](./docs/benchmark-results/)
+- [Benchmark Template](./docs/benchmark-results/BENCHMARK_TEMPLATE.md) - Template for recording new benchmark results
+
+## Contributing
+
+When adding new benchmark results:
+1. Use the [benchmark template](./docs/benchmark-results/BENCHMARK_TEMPLATE.md)
+2. Include all version information and compilation flags
+3. Document any environment-specific optimizations
+4. Save results with format: `YYYY-MM-description.md`
